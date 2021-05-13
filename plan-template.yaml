@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: plan-template
+  annotations:
+    description: "Create plan for api testing"
+    tags: "migplans"
+objects:
+  - apiVersion: migration.openshift.io/v1alpha1
+    kind: MigPlan
+    metadata:
+      name: ${PLAN_NAME}
+      namespace: openshift-migration
+    spec:
+      destMigClusterRef:
+        name: host
+        namespace: openshift-migration
+      migStorageRef:
+        name: sr3
+        namespace: openshift-migration
+      namespaces:
+        - mediawiki
+      persistentVolumes:
+        - capacity: 10Gi
+          name: vol47
+          proposedCapacity: "0"
+          pvc:
+            accessModes:
+              - ReadWriteOnce
+            hasReference: true
+            name: mediawiki
+            namespace: mediawiki
+          selection:
+            action: copy
+            copyMethod: filesystem
+            storageClass: gp2
+          supported:
+            actions:
+              - copy
+              - move
+            copyMethods:
+              - filesystem
+              - snapshot
+      srcMigClusterRef:
+        name: src3333
+        namespace: openshift-migration
+parameters:
+  - description: plan name
+    from: "[A-Z0-9]{8}"
+    generate: expression
+    name: PLAN_NAME
+labels:
+  planTemplate: master
